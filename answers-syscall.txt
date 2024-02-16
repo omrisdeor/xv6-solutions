@@ -1,0 +1,13 @@
+usertrap inside file kernel/trap.c
+
+the value is 7, it represents that the syscall exec will be run
+
+the previous mode was 0x22
+
+the kernel panics at the instruction:
+lw	a3,0(zero)
+so a3 corresponds to the variable num
+
+address 0 is not mapped in the kernel space which cause the kernel to panic, and this is confirmed by the value in scause, as the value 0xd (which is the value printed in the panic) means load page fault
+
+the binary that was running was initcode, with process id 1
