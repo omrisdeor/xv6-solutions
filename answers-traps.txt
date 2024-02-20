@@ -1,0 +1,6 @@
+1. The a registers contain arguments to functions. The 13 in main's call to printf is stored in register a2
+2. Main doesn't call f, it computes f(8) during compilation at line 24 (and replaces the call with the value 11). The call to g is at line 14 (and is inline)
+3. printf is loacted at adress 0x000000000000064a
+4. The value is 0x38, which is the address of the next instruction after the jalr
+5. The output is He110 World, because the hex value of 57616 is e110 and when reading 0x00646c72 in little endian we read it as 0x72->r, 0x6c->l, 0x64->d, 0x00->NULL terminator. If we want to get the same results on a big endian machine, we would set i=0x726c6400, and we wouldn't need to change 57616.
+6. The return address will be printed after y because printf takes its arguments from the stack, and the value on the stack after 3 is the return address
