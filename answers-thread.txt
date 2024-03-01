@@ -1,0 +1,5 @@
+The problem is with the line
+*p = e;
+in insert.
+If two threads try to insert at the same time in to the same bucket, then only the one that will run that line last will be inserted, because the first one will be overwritten, because both of the calls will be run with the same value of p.
+For example, if we try to insert 0 and 5 at the same time (the insert function for both of these input is called at the same time), and if 0 finishes running first, then 0 won't be inserted into the table, and only 5 will
