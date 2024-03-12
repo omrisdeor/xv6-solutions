@@ -74,7 +74,6 @@ bget(uint dev, uint blockno)
   struct buf *b;
 
   int hash = blockno % BUCKET_COUNT;
-  // printf("looking for blockno: %d, hash: %d\n", blockno, hash);
 
   acquire(&bcache.heads[hash].lock);
   for(b = bcache.heads[hash].head.next; b != &bcache.heads[hash].head; b = b->next){
@@ -91,25 +90,20 @@ bget(uint dev, uint blockno)
   for (int full_buck = hash; full_buck < BUCKET_COUNT + hash; full_buck++)
   {
     int buck = full_buck % BUCKET_COUNT;
-    // printf("buck: %d\n", buck);
     if (buck != hash)
     {
       acquire(&bcache.heads[buck].lock);
     }
-    // printf("head: %p\n", bcache.heads[buck].head.next);
     for (b = bcache.heads[buck].head.next; b != &bcache.heads[buck].head; b = b->next)
     {
-      // printf("b->refcnt: %d\n", b->refcnt);
       if (b->refcnt == 0)
       {
         b->dev = dev;
         b->blockno = blockno;
         b->valid = 0;
         b->refcnt = 1;
-        // printf("going to release\n");
         if (buck != hash)
         {
-          // printf("buck != hash\n");
           b->next->prev = b->prev;
           b->prev->next = b->next;
           b->next = bcache.heads[hash].head.next;
@@ -118,12 +112,9 @@ bget(uint dev, uint blockno)
           bcache.heads[hash].head.next = b;
           release(&bcache.heads[buck].lock);
         }
-        // printf("going to release buck\n");
         release(&bcache.lock);
         release(&bcache.heads[hash].lock);
-        // printf("going to acquiresleep\n");
         acquiresleep(&b->lock);
-        // printf("returning\n");
         return b;
       }
     }
@@ -142,15 +133,10 @@ bread(uint dev, uint blockno)
   struct buf *b;
 
   b = bget(dev, blockno);
-  // printf("b->valid: %d\n", b->valid);
-  // printf("b->blockno: %d\n", b->blockno);
   if(!b->valid) {
-    // printf("going to read from disk\n");
     virtio_disk_rw(b, 0);
-    // printf("read from disk\n");
     b->valid = 1;
   }
-  // printf("returning from bread\n");
   return b;
 }
 
